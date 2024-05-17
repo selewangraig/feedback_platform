@@ -1,5 +1,4 @@
 const Feedback = require("../models/Feedback");
-// const { v4: uuidv4 } = require("uuid");
 
 exports.getAllFeedback = async (req, res) => {
   try {
@@ -53,6 +52,17 @@ exports.deleteFeedback = async (req, res) => {
     const feedback = await Feedback.findById(req.params.id);
     await feedback.remove();
     res.json({ message: "Feedback deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getFeedbackByTeacher = async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find({
+      teacher: req.params.teacherId,
+    }).populate("subject student");
+    res.json(feedbacks);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

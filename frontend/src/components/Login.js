@@ -1,53 +1,81 @@
-// src/components/Login.js
 import React, { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
-  flex-direction: column; // Changed to column to stack items vertically
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: #f5f5f5;
 `;
 
+const FormWrapper = styled.div`
+  width: 400px;
+  max-width: 90vw;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 40px;
+`;
+
+const Logo = styled.img`
+  max-width: 200px;
+  margin-bottom: 30px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  width: 300px;
-  padding: 20px;
-  background-color: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 `;
 
 const Input = styled.input`
-  margin-bottom: 10px;
-  padding: 10px;
+  margin-bottom: 20px;
+  padding: 12px;
   font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    border-color: #6c63ff;
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #999;
+  }
 `;
 
 const Button = styled.button`
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
-  background-color: #007bff;
+  background-color: #6c63ff;
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #5549d6;
+  }
 `;
 
-const StyledLink = styled(Link)`
+const RegisterLink = styled.a`
   padding: 10px;
   font-size: 16px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
+  color: #6c63ff;
   text-decoration: none;
   margin-top: 20px;
+  text-align: center;
+
   &:hover {
-    background-color: #0056b3; /* Darker shade for hover effect */
+    text-decoration: underline;
   }
 `;
 
@@ -58,14 +86,17 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
-        { username, password }
+        {
+          username,
+          password,
+        }
       );
-      // Assuming the response contains a role field
       const role = response.data.role;
-      // Redirect based on the role
+
       switch (role) {
         case "student":
           navigate("/student", { state: { username } });
@@ -86,23 +117,29 @@ const Login = () => {
 
   return (
     <Container>
-      <Form onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          placeholder="Username"
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <Input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button type="submit">Login</Button>
-      </Form>
-      {/* Link to the registration page */}
-      <StyledLink to="/register" style={{ marginTop: "20px" }}>
-        No account? Click here to register
-      </StyledLink>
+      <FormWrapper>
+        <Logo src="RU-Logo.jpeg" alt="School Logo" />
+        <Form onSubmit={handleSubmit}>
+          <Input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <Button type="submit">Login</Button>
+        </Form>
+        <RegisterLink href="/register">
+          No account? Click here to register
+        </RegisterLink>
+      </FormWrapper>
     </Container>
   );
 };

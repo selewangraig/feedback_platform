@@ -2,21 +2,22 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const DashboardContainer = styled.div`
   display: flex;
   height: 100vh;
-  background-color: #f0f0f0; // Light background for overall container
+  background-color: #f0f0f0;
 `;
 
 const Sidebar = styled.nav`
   width: 200px;
-  background-color: #5a009d; // Purple background for sidebar
+  background-color: #5a009d;
   padding: 20px;
   color: white;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); // Add shadow for depth
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 `;
 
 const SidebarButton = styled.button`
@@ -29,7 +30,7 @@ const SidebarButton = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #7a3b9b; // Lighter purple on hover
+    background-color: #7a3b9b;
   }
 `;
 
@@ -42,7 +43,7 @@ const DropdownMenu = styled.div`
 const Content = styled.main`
   flex-grow: 1;
   padding: 20px;
-  background-color: white; // White background for content area
+  background-color: white;
 `;
 
 const Header = styled.header`
@@ -51,7 +52,7 @@ const Header = styled.header`
   align-items: center;
   margin-bottom: 20px;
   padding: 10px 0;
-  border-bottom: 1px solid #ddd; // Add a subtle border to separate header
+  border-bottom: 1px solid #ddd;
 `;
 
 const LogoContainer = styled.div`
@@ -84,7 +85,7 @@ const TableCell = styled.td`
 
 const LogoutButton = styled.button`
   padding: 10px;
-  background-color: #5a009d; // Purple background for buttons
+  background-color: #5a009d;
   color: white;
   border: none;
   border-radius: 4px;
@@ -93,12 +94,16 @@ const LogoutButton = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #7a3b9b; // Lighter purple on hover
+    background-color: #7a3b9b;
   }
 `;
 
 function TeacherDashboard() {
+  const { state } = useLocation();
+  const username = state?.username;
+
   const [subjects, setSubjects] = useState([]);
+  const [filteredSubjects, setFilteredSubjects] = useState([]);
   const [feedbacks, setFeedbacks] = useState([]);
   const [selectedTab, setSelectedTab] = useState("home");
   const [dropdownOpen, setDropdownOpen] = useState({
@@ -108,18 +113,32 @@ function TeacherDashboard() {
 
   useEffect(() => {
     const fetchSubjects = async () => {
-      const res = await axios.get("http://localhost:5000/api/subjects");
-      setSubjects(res.data);
+      try {
+        const res = await axios.get(`http://localhost:5000/api/subjects`);
+        const subjectsForTeacher = res.data.filter(
+          (subject) => subject.teacher === username
+        );
+        setSubjects(res.data);
+        setFilteredSubjects(subjectsForTeacher);
+      } catch (error) {
+        console.error("Error fetching subjects", error);
+      }
     };
 
     const fetchFeedbacks = async () => {
-      const res = await axios.get("http://localhost:5000//api/feedback");
-      setFeedbacks(res.data);
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/feedback/feedback-by-teacher/${username}`
+        );
+        setFeedbacks(res.data);
+      } catch (error) {
+        console.error("Error fetching feedbacks", error);
+      }
     };
 
     fetchSubjects();
     fetchFeedbacks();
-  }, []);
+  }, [username]);
 
   const toggleDropdown = (menu) => {
     setDropdownOpen((prevState) => ({
@@ -160,7 +179,7 @@ function TeacherDashboard() {
           <LogoContainer>
             <Logo src="RU-Logo.jpeg" alt="RU Logo" />
           </LogoContainer>
-          <div>Welcome, Teacher!</div>
+          <div>Welcome, {username}!</div>
         </Header>
         {selectedTab === "home" && (
           <div style={{ textAlign: "center" }}>
@@ -178,11 +197,15 @@ function TeacherDashboard() {
               </tr>
             </thead>
             <tbody>
-              {subjects.map((subject) => (
+              {filteredSubjects.map((subject) => (
                 <TableRow key={subject._id}>
                   <TableCell>{subject.name}</TableCell>
                   <TableCell>{subject.description}</TableCell>
-                  <TableCell>{subject.students.join(", ")}</TableCell>
+                  <TableCell>
+                    {subject.students
+                      .map((student) => student.username)
+                      .join(", ")}
+                  </TableCell>
                 </TableRow>
               ))}
             </tbody>
@@ -200,9 +223,9 @@ function TeacherDashboard() {
             <tbody>
               {feedbacks.map((feedback) => (
                 <TableRow key={feedback._id}>
-                  <TableCell>{feedback.subject}</TableCell>
-                  <TableCell>{feedback.feedback}</TableCell>
-                  <TableCell>{feedback.student}</TableCell>
+                  <TableCell>{feedback.subject.name}</TableCell>
+                  <TableCell>{feedback.content}</TableCell>
+                  <TableCell>{feedback.student.username}</TableCell>
                 </TableRow>
               ))}
             </tbody>
