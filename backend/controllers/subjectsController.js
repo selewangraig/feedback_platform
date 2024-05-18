@@ -56,16 +56,26 @@ exports.updateSubject = async (req, res) => {
   }
 };
 
+// exports.deleteSubject = async (req, res) => {
+//   try {
+//     const subject = await Subject.findById(req.params.id);
+//     if (!subject) {
+//       return res.status(404).json({ message: "Subject not found" });
+//     }
+//     await subject.remove();
+//     res.json({ message: "Subject deleted" });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 exports.deleteSubject = async (req, res) => {
+  const { id } = req.params;
   try {
-    const subject = await Subject.findById(req.params.id);
-    if (!subject) {
-      return res.status(404).json({ message: "Subject not found" });
-    }
-    await subject.remove();
-    res.json({ message: "Subject deleted" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    await Subject.findByIdAndDelete(id);
+    res.status(200).json({ message: "Subject deleted successfully" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };
 

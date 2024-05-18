@@ -325,9 +325,6 @@ function AdminDashboard() {
             Add Subject
           </SidebarButton>
         </DropdownMenu>
-        <SidebarButton onClick={() => setSelectedTab("analysis")}>
-          Analysis
-        </SidebarButton>
         <LogoutButton onClick={() => (window.location.href = "/login")}>
           Logout
         </LogoutButton>
