@@ -116,7 +116,7 @@ function TeacherDashboard() {
       try {
         const res = await axios.get(`http://localhost:5000/api/subjects`);
         const subjectsForTeacher = res.data.filter(
-          (subject) => subject.teacher.username === username
+          (subject) => subject.teacher == username
         );
         setSubjects(res.data);
         setFilteredSubjects(subjectsForTeacher);
@@ -127,11 +127,10 @@ function TeacherDashboard() {
 
     const fetchFeedbacks = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/feedbacks`);
-        const feedbacksForTeacher = res.data.filter(
-          (feedback) => feedback.teacher === username
+        const res = await axios.get(
+          `http://localhost:5000/api/feedback/feedback-by-teacher/${username}`
         );
-        setFeedbacks(feedbacksForTeacher);
+        setFeedbacks(res.data);
       } catch (error) {
         console.error("Error fetching feedbacks", error);
       }
@@ -212,12 +211,14 @@ function TeacherDashboard() {
             </tbody>
           </TableContainer>
         )}
+
         {selectedTab === "manageFeedback" && (
           <TableContainer>
             <thead>
               <tr>
                 <th>Subject</th>
                 <th>Feedback</th>
+                <th>Rating</th>
                 <th>Submitted By</th>
               </tr>
             </thead>
@@ -226,6 +227,7 @@ function TeacherDashboard() {
                 <TableRow key={feedback._id}>
                   <TableCell>{feedback.subject.name}</TableCell>
                   <TableCell>{feedback.content}</TableCell>
+                  <TableCell>{feedback.rating}</TableCell>
                   <TableCell>{feedback.student.username}</TableCell>
                 </TableRow>
               ))}

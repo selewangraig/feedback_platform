@@ -4,9 +4,13 @@ const Subject = require("../models/Subject");
 
 exports.getAllFeedback = async (req, res) => {
   try {
-    const feedbacks = await Feedback.find();
+    const feedbacks = await Feedback.find()
+      .populate("subject")
+      .populate("teacher")
+      .populate("student");
     res.json(feedbacks);
   } catch (error) {
+    console.error("Error fetching feedbacks", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -136,6 +140,25 @@ exports.getFeedbackByStudentUsername = async (req, res) => {
 
     const feedbacks = await Feedback.find({ student: student._id }).populate(
       "subject teacher"
+    );
+    res.json(feedbacks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getFeedbackByTeacherUsername = async (req, res) => {
+  try {
+    const teacher = await User.findOne({
+      username: req.params.username,
+      role: "teacher",
+    });
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    const feedbacks = await Feedback.find({ teacher: teacher._id }).populate(
+      "subject student"
     );
     res.json(feedbacks);
   } catch (error) {
