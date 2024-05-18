@@ -116,7 +116,7 @@ function TeacherDashboard() {
       try {
         const res = await axios.get(`http://localhost:5000/api/subjects`);
         const subjectsForTeacher = res.data.filter(
-          (subject) => subject.teacher === username
+          (subject) => subject.teacher.username === username
         );
         setSubjects(res.data);
         setFilteredSubjects(subjectsForTeacher);
@@ -127,10 +127,11 @@ function TeacherDashboard() {
 
     const fetchFeedbacks = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/feedback/feedback-by-teacher/${username}`
+        const res = await axios.get(`http://localhost:5000/api/feedbacks`);
+        const feedbacksForTeacher = res.data.filter(
+          (feedback) => feedback.teacher === username
         );
-        setFeedbacks(res.data);
+        setFeedbacks(feedbacksForTeacher);
       } catch (error) {
         console.error("Error fetching feedbacks", error);
       }

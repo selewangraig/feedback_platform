@@ -88,9 +88,36 @@ exports.deleteFeedback = async (req, res) => {
 
 exports.getFeedbackByTeacher = async (req, res) => {
   try {
-    const feedbacks = await Feedback.find({
-      teacher: req.params.teacherId,
-    }).populate("subject student");
+    const teacher = await User.findOne({
+      username: req.params.username,
+      role: "teacher",
+    });
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    const feedbacks = await Feedback.find({ teacher: teacher._id }).populate(
+      "subject student"
+    );
+    res.json(feedbacks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getFeedbackByTeacherId = async (req, res) => {
+  try {
+    const teacher = await User.findOne({
+      _id: req.params.teacherId,
+      role: "teacher",
+    });
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    const feedbacks = await Feedback.find({ teacher: teacher._id }).populate(
+      "subject student"
+    );
     res.json(feedbacks);
   } catch (error) {
     res.status(500).json({ message: error.message });

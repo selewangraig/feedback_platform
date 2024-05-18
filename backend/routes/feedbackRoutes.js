@@ -7,6 +7,7 @@ const {
   updateFeedback,
   deleteFeedback,
   getFeedbackByTeacher,
+  getFeedbackByTeacherId,
   getFeedbackByStudentUsername,
 } = require("../controllers/feedbackController");
 
@@ -15,7 +16,8 @@ router.get("/get-feedback-by-id/:id", getFeedbackById);
 router.post("/create-feedback", createFeedback);
 router.put("/update-feedback/:id", updateFeedback);
 router.delete("/delete-feedback/:id", deleteFeedback);
-router.get("/feedback-by-teacher/:teacherId", getFeedbackByTeacher);
+router.get("/feedback-by-teacherId/:teacherId", getFeedbackByTeacherId);
+router.get("/feedback-by-teacher/:username", getFeedbackByTeacher);
 router.get("/feedback-by-student/:username", getFeedbackByStudentUsername);
 
 module.exports = router;
