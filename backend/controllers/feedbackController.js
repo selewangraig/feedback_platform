@@ -10,8 +10,10 @@ exports.getAllFeedback = async (req, res) => {
       .populate("student");
     res.json(feedbacks);
   } catch (error) {
-    console.error("Error fetching feedbacks", error);
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching feedbacks:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching feedbacks", error: error.message });
   }
 };
 
@@ -20,13 +22,15 @@ exports.getFeedbackById = async (req, res) => {
     const feedback = await Feedback.findById(req.params.id);
     res.json(feedback);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching feedback by ID:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching feedback by ID", error: error.message });
   }
 };
 
 exports.createFeedback = async (req, res) => {
   try {
-    // Lookup the student by name and role
     const student = await User.findOne({
       name: req.body.User,
       role: "student",
@@ -43,13 +47,11 @@ exports.createFeedback = async (req, res) => {
       return res.status(400).json({ message: "Teacher not found" });
     }
 
-    // Lookup the subject by name
     const subject = await Subject.findOne({ name: req.body.subject });
     if (!subject) {
       return res.status(400).json({ message: "Subject not found" });
     }
 
-    // Create the feedback with ObjectId references
     const feedback = new Feedback({
       title: req.body.title,
       content: req.body.content,
@@ -62,7 +64,10 @@ exports.createFeedback = async (req, res) => {
     const newFeedback = await feedback.save();
     res.status(201).json(newFeedback);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error creating feedback:", error);
+    res
+      .status(500)
+      .json({ message: "Error creating feedback", error: error.message });
   }
 };
 
@@ -76,7 +81,10 @@ exports.updateFeedback = async (req, res) => {
     const updatedFeedback = await feedback.save();
     res.json(updatedFeedback);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Error updating feedback:", error);
+    res
+      .status(400)
+      .json({ message: "Error updating feedback", error: error.message });
   }
 };
 
@@ -86,7 +94,10 @@ exports.deleteFeedback = async (req, res) => {
     await feedback.remove();
     res.json({ message: "Feedback deleted" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error deleting feedback:", error);
+    res
+      .status(500)
+      .json({ message: "Error deleting feedback", error: error.message });
   }
 };
 
@@ -105,7 +116,13 @@ exports.getFeedbackByTeacher = async (req, res) => {
     );
     res.json(feedbacks);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching feedback by teacher:", error);
+    res
+      .status(500)
+      .json({
+        message: "Error fetching feedback by teacher",
+        error: error.message,
+      });
   }
 };
 
@@ -124,7 +141,13 @@ exports.getFeedbackByTeacherId = async (req, res) => {
     );
     res.json(feedbacks);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching feedback by teacher ID:", error);
+    res
+      .status(500)
+      .json({
+        message: "Error fetching feedback by teacher ID",
+        error: error.message,
+      });
   }
 };
 
@@ -143,7 +166,13 @@ exports.getFeedbackByStudentUsername = async (req, res) => {
     );
     res.json(feedbacks);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching feedback by student username:", error);
+    res
+      .status(500)
+      .json({
+        message: "Error fetching feedback by student username",
+        error: error.message,
+      });
   }
 };
 
@@ -162,6 +191,12 @@ exports.getFeedbackByTeacherUsername = async (req, res) => {
     );
     res.json(feedbacks);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching feedback by teacher username:", error);
+    res
+      .status(500)
+      .json({
+        message: "Error fetching feedback by teacher username",
+        error: error.message,
+      });
   }
 };
