@@ -79,9 +79,20 @@ const RegisterLink = styled.a`
   }
 `;
 
+const Alert = styled.div`
+  padding: 10px;
+  background-color: ${(props) =>
+    props.type === "error" ? "#f44336" : "#4caf50"};
+  color: white;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  text-align: center;
+`;
+
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [alert, setAlert] = useState({ type: "", message: "" });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -111,7 +122,10 @@ const Login = () => {
           navigate("/");
       }
     } catch (error) {
-      console.error(error);
+      setAlert({
+        type: "error",
+        message: "Login failed. Please check your credentials.",
+      });
     }
   };
 
@@ -119,6 +133,7 @@ const Login = () => {
     <Container>
       <FormWrapper>
         <Logo src="RU-Logo.jpeg" alt="School Logo" />
+        {alert.message && <Alert type={alert.type}>{alert.message}</Alert>}
         <Form onSubmit={handleSubmit}>
           <Input
             type="text"

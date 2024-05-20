@@ -68,26 +68,42 @@ const Button = styled.button`
   }
 `;
 
+const Alert = styled.div`
+  padding: 10px;
+  background-color: ${(props) =>
+    props.type === "error" ? "#f44336" : "#4caf50"};
+  color: white;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  text-align: center;
+`;
+
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+  const [alert, setAlert] = useState({ type: "", message: "" });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/admin/register",
-        {
-          username,
-          password,
-          role,
-        }
-      );
-      navigate("/login");
+      await axios.post("http://localhost:5000/api/auth/admin/register", {
+        username,
+        password,
+        role,
+      });
+      setAlert({
+        type: "success",
+        message: "Registration successful. Redirecting to login...",
+      });
+      setTimeout(() => navigate("/login"), 2000); // Redirect after 2 seconds
     } catch (error) {
-      console.error(error);
+      setAlert({
+        type: "error",
+        message:
+          "Registration failed. Please check your details and try again.",
+      });
     }
   };
 
@@ -95,6 +111,7 @@ const Register = () => {
     <Container>
       <FormWrapper>
         <Logo src="RU-Logo.jpeg" alt="School Logo" />
+        {alert.message && <Alert type={alert.type}>{alert.message}</Alert>}
         <Form onSubmit={handleSubmit}>
           <Input
             type="text"
